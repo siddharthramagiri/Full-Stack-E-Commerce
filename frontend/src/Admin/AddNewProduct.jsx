@@ -1,56 +1,29 @@
 import React, {useEffect, useState} from 'react';
+import axios from "axios";
 
 
-function AddProduct() {
+function AddNewProduct() {
     const [product, setProduct] = useState({
         productName: '',
         price: '',
         image : '',
         category: '',
-        stocks : {}, // =>
         description : '',
+        stocks : [],
         productType: '',
     });
     const [message, setMessage] = useState('');
+    const [error, setError] = useState(false);
 
-    let sizes = new Map();
-    let [sizeShoes, setSizeShoes] = useState({'7': '', '8':'', '9':'', '10':'', '11':'', '12':'', '13':''})
-    const [clothSizes, setClothSizes] = useState({ 'XS':'', 'S':'', 'M':'','L':'','XL':'','XXL':''})
-    const [otherSize, setOtherSize] = useState('')
-
-    useEffect(() => {
-        sizes = new Map();
-        Object.entries(sizeShoes).map(([size,qty]) => {
-            if(qty) {
-                sizes.set(size,qty);
+    const addtoMap = (e) => {
+            sizes.set(e.target.name,e.target.value)
+            let stock = [];
+            for(let [size,qty] of sizes.entries()) {
+                stock.push({'size': size, 'stock' : parseInt(qty)})
             }
-        })
-
-        let stock = {};
-        for (let [size, qty] of sizes.entries()) {
-            stock = {...stock,[size] : qty}
-        }
-        console.log(stock)
-        setProduct({...product, stocks : stock});
-        // console.log(sizes)
-    },[sizeShoes])
-
-    useEffect(() => {
-        sizes = new Map();
-        Object.entries(clothSizes).map(([size,qty]) => {
-            if(qty) {
-                sizes.set(size,qty);
-            }
-        })
-        let stock = {};
-        for (let [size, qty] of sizes.entries()) {
-            stock = {...stock,[size] : qty}
-        }
-        console.log(stock)
-        setProduct({...product, stocks : stock});
-        // console.log(sizes)
-    }, [clothSizes]);
-
+            console.log(stock)
+            setProduct({...product, stocks: stock})
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -62,16 +35,38 @@ function AddProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Sizes Stock")
         console.log(product)
-        // try {
-        //     // Replace with your API endpoint
-        //     const response = await axios.post('/api/products', product);
-        //     setMessage('Product added successfully!');
-        //     setProduct({ name: '', category: '', type: '', sizes: '', price: '' , stocks: {}});
-        // } catch (error) {
-        //     setMessage('Failed to add product.');
-        // }
+        try {
+            const user = await JSON.parse(localStorage.getItem('user'));
+            const token = localStorage.getItem('token');
+            console.log(token);
+
+            const response = await axios.post(`/api/products/admin/${user._id}/addproduct`,
+                product, {
+                    headers : {
+                        "Content-Type" : 'application/json',
+                        'Authorization' : `Bearer ${token}`
+                    }
+                }
+            );
+            console.log(response.data);
+            setMessage('Product added successfully!');
+            setProduct({
+                productName: '',
+                price: '',
+                image : '',
+                category: '',
+                stocks : [],
+                description : '',
+                productType: '',
+            });
+            sizes = new Map()
+        } catch (error) {
+            console.log(error.message)
+            console.log('Failed to post')
+            setError(true);
+            setMessage('Failed to add product.');
+        }
     };
 
     const activateCategory = (e) => {
@@ -101,8 +96,9 @@ function AddProduct() {
                         </label>
                         {categoriesList.map((category) =>
                             <button key={category} onClick={activateCategory} name={category} value={category}
-                                    className={`font-bold border-gray-400 border-2 px-4 p-2 m-2 hover:border-black hover:text-black
-                                        ${product.category === category ? "bg-black text-white border-black hover:text-white hover:border-black" : "bg-white text-gray-400"}
+                                    className={`font-bold  border-2 px-4 p-2 m-2 hover:border-black hover:text-black
+                                        ${product.category === category ? "bg-black text-white border-black hover:text-white hover:border-black"
+                                        : "bg-white text-gray-400 border-gray-400"}
                                     `}
                             >
                                 {category}
@@ -116,41 +112,40 @@ function AddProduct() {
                     <div className="mx-8">
                         {product.category &&
                         (product.category === 'Shoes' || product.category === 'Sliders') ?
-                            Object.entries(sizeShoes).map(([size, qty]) =>
+                            ShoeSizes.map((size) => (
                                 <div key={size} className="flex justify-between my-2 w-1/2">
                                     <label className="py-2">{size}</label>
                                     <input
-                                        type="number" placeholder="Stock"
+                                        type="number" placeholder="Stock" name={size} id={size}
                                         className="px-4 p-1 w-3/4 border-2 border-gray-400"
-                                        value={qty} min={0}
-                                        onChange={(e) =>
-                                            setSizeShoes({...sizeShoes, [size]: e.currentTarget.value})
-                                        }
+                                        value={sizes.get(size)}
+                                        onChange={addtoMap}
                                     />
                                 </div>
-                            )
+                            ))
                             : product.category === 'Tops' ?
-                                Object.entries(clothSizes).map(([size, qty]) =>
+                                ClothingSizes.map((size) => (
                                     <div key={size} className="flex justify-between my-2 w-1/2">
                                         <label className="py-2">{size}</label>
                                         <input
-                                            type="number" placeholder="Stock"
+                                            type="number" placeholder="Stock" name={size} id={size}
                                             className="px-4 p-1 w-3/4 border-2 border-gray-400"
-                                            value={qty} min={0}
-                                            onChange={(e) =>
-                                                setClothSizes({...clothSizes, [size]: e.currentTarget.value})
-                                            }
+                                            value={sizes.get(size)}
+                                            onChange={addtoMap}
                                         />
                                     </div>
-                                )
-                                : <div className="flex justify-between my-2">
-                                    <label className="">Regular Size </label>
-                                    <input
-                                        type="number" placeholder="Stock"
-                                        className="px-4 p-1 w-1/2 border-2 border-gray-400"
-                                        value={otherSize}
-                                        onChange={(e) => setOtherSize(e.currentTarget.value)}/>
-                                </div>
+                                ))
+                                : Regular.map((size) => (
+                                    <div key={size} className="flex justify-between my-2 w-1/2">
+                                        <label className="py-2">{size}</label>
+                                        <input
+                                            type="number" placeholder="Stock" name={size} id={size}
+                                            className="px-4 p-1 w-3/4 border-2 border-gray-400"
+                                            value={sizes.get(size)}
+                                            onChange={addtoMap}
+                                        />
+                                    </div>
+                                ))
                         }
                     </div>
 
@@ -211,7 +206,8 @@ function AddProduct() {
                 </form>
 
                 {message && (
-                    <div className="mt-4 p-3 text-center font-medium">
+                    <div className={`mt-4 p-3 text-center font-medium 
+                     ${error === true ? "text-red-700" : "text-green-900"}`}>
                         {message}
                     </div>
                 )}
@@ -220,7 +216,11 @@ function AddProduct() {
     );
 }
 
+let sizes = new Map();
+const ShoeSizes = ['UK 7','UK 8','UK 9','UK 10','UK 11','UK 12','UK 13'];
+const ClothingSizes = ['XS','S','M','L','XL','XXL','XXXL']
+const Regular = ['Regular']
 
 const categoriesList = ["Shoes", "Sliders", "Tops", "Accessories", "Air Force", "Sports"]
 
-export default AddProduct;
+export default AddNewProduct;

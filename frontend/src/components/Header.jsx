@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Link, NavLink} from "react-router";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faCircleChevronDown, faLocationDot, faUser} from '@fortawesome/free-solid-svg-icons'
+import {faLocationDot, faUser, faMagnifyingGlass, faCaretDown} from '@fortawesome/free-solid-svg-icons'
 
 function Header() {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -18,7 +18,7 @@ function Header() {
                         <Link to="/" className="flex items-center">
                             <img
                                 src="https://1000logos.net/wp-content/uploads/2017/03/Nike-Logo-1971-now.png"
-                                className="mr-3 h-12"
+                                className="mr-3 h-7"
                                 alt="Logo"
                             />
                         </Link>
@@ -37,11 +37,11 @@ function Header() {
                         >
                             <div className="relative">
                                 <button
-                                    className={`bg-black text-white p-3 px-10`}
+                                    className={`bg-gray-200 text-black p-3 px-10`}
                                     onClick={toggleDropDown}
                                 >
                                     Categories
-                                    <FontAwesomeIcon icon={faCircleChevronDown} className="mx-3"/>
+                                    <FontAwesomeIcon icon={faCaretDown} className="mx-3" style={{color : "black"}}/>
                                 </button>
                                 {dropDown &&
                                     <Category />
@@ -49,12 +49,12 @@ function Header() {
                             </div>
                             <form className="flex">
                                 <input
-                                    className="bg-gray-200 border-2 border-gray-700 px-4 w-96"
+                                    className="bg-white border-2 border-gray-200 px-4 w-96"
                                     placeholder="Search Product"
                                     type="text"
                                 />
-                                <button className="p-3 bg-black w-fit text-white">
-                                    Go
+                                <button className="p-3 bg-gray-200 w-fit text-white">
+                                    <FontAwesomeIcon icon={faMagnifyingGlass} style={{color : "black"}}/>
                                 </button>
                             </form>
                         </div>
@@ -139,13 +139,13 @@ const categoriesList = ["Shoes", "Sliders", "Tops", "Accessories", "Air Force", 
 const Category = () => {
     return(
         <>
-            <div className="absolute mt-2 w-48 bg-black text-white shadow-lg z-10 ">
+            <div className="absolute mt-2 w-48 bg-gray-200 text-black shadow-lg z-10 ">
                 <ul>
                     {categoriesList.map((item) => (
                         <li key={item}>
                             <Link
                                 to={`/category/${item}`}
-                                className="block px-4 py-2 hover:bg-gray-200 hover:text-black duration-100"
+                                className="block px-4 py-2 hover:bg-white hover:text-black duration-100"
                             >
                                 {item}
                             </Link>

@@ -15,8 +15,7 @@ const stcokSchema = mongoose.Schema({
 const productSchema = mongoose.Schema({
     productName: {
         type: String,
-        required: true,
-        unique: true,
+        required: true
     },
     price: {
         type: Number,

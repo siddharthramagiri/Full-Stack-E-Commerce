@@ -13,7 +13,6 @@ const updateStocks = (stocks, existingStocks) => {
     return Array.from(stockMap, ([size, stock]) => ({size, stock}));
 }
 
-
 const addProduct = async (req, res) => {
     try {
         let { productName, price, image, category, stocks, description, productType} = req.body;
@@ -34,8 +33,7 @@ const addProduct = async (req, res) => {
                 product: product
              });
 
-        } else if (imageExists || product) {
-
+        } else if (imageExists) {
             return res.status(400).json({ message: "Product already existed" });
         }
 
@@ -132,10 +130,21 @@ const deleteFromCart = async(req, res) => {
     }
 }
 
+const showAllProducts = async(req, res) => {
+    try {
+        const products = await Product.find({});
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(404).json({message : "Error Loading Products"});
+    }
+
+}
+
 module.exports = {
     addProduct,
     showProduct,
     addToCart,
     addToWishlist,
-    deleteFromCart
+    deleteFromCart,
+    showAllProducts
 }

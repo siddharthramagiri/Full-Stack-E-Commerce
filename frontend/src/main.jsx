@@ -8,18 +8,20 @@ import User from "./Users/User.jsx";
 import Login from "./Users/Login.jsx";
 import SignUp from "./Users/SignUp.jsx";
 import UpdateDetails from "./Users/UpdateDetails.jsx";
-import Admin from "./Users/Admin.jsx";
+import Admin from "./Admin/Admin.jsx";
+import ProductDetails from "./Product/ProductDetails.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<App/>}>
-            {/*<Route path="" element={<Home />}/>*/}
+            <Route path="" element={<Home />}/>
             <Route path="about" element={<About />}/>
             <Route path="user" element={<User />}/>
             <Route path="user/login" element={<Login />}/>
             <Route path="user/signup" element={<SignUp />}/>
             <Route path="user/updatedetails/:id" element={<UpdateDetails />}/>
             <Route path='/in/admin' element={<Admin />} />
+            <Route path='/product/:id' element={<ProductDetails />}/>
         </Route>
     )
 )

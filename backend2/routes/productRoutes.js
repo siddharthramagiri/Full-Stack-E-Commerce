@@ -4,7 +4,8 @@ const {
     showProduct, 
     addToCart,
     addToWishlist,
-    deleteFromCart
+    deleteFromCart,
+    showAllProducts
 } = require('../controllers/productsController');
 
 const adminAuthenticate = require('../middleware/authenticateAdmin');
@@ -16,7 +17,7 @@ const productRoutes = express.Router();
 productRoutes.post('/admin/:id/addproduct', authenticateToke, adminAuthenticate, 
     addProduct
 );
-
+productRoutes.get('/', showAllProducts)
 productRoutes.get('/show/:pid', showProduct)
 productRoutes.put('/addtoCart/:pid/:id', authenticateToke, addToCart)
 productRoutes.put('/addtowish/:pid/:id', authenticateToke, addToWishlist)
